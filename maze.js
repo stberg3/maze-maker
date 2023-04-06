@@ -21,12 +21,53 @@ function showMaze(maze) {
 
 function showBox() {
 	var grid = new Array(5)
+	
 	for(i=0; i<5; i++) {
 		grid[i] = new Array(5)
+		
 		for(j=0; j<5; j++) {
 			grid[i][j] = new GridBox(i,j,true, true, true, true);
 		}		
 	}
+
+	backtrack(grid[0][1], grid);
+}
+
+function backtrack(box,grid) {
+	let x = box.col;
+	let y = box.row;
+	console.log(`[${x},${y}]`)
+
+	grid[x][y].visited = true;
+	grid[x][y].render();
+
+	let offsets = [[0,1],[0,-1],[1,0],[-1,0]];
+	let neighbors = offsets
+		.map((offset) => [x+offset[0], y+offset[1]])
+		.filter((newCoord) => {
+			let okay = true;
+			let newX = newCoord[0];
+			let newY = newCoord[1];
+
+			okay &&= newX >= 0
+			okay &&= newY >= 0
+			okay &&= newX < grid.length
+			okay &&= newY < grid[0].length			
+
+			return okay && !grid[newX,newY].visited;
+		});
+
+	console.log(`BOX ${box}: (${neighbors.length}) ` + neighbors.join(';'))
+	if(neighbors.length == 0) return;
+
+	let neighbor = neighbors[Math.floor(Math.random(1)*neighbors.length)]
+	console.log(`Joining ${box} to ${neighbor}`)
+	console.log(`\t BOX ${box.row} ${box.col}`)
+	console.log(`\t NEIGHBOR ${neighbor} ${neighbor.row} ${neighbor.col}`)
+	box.join(neighbor);
+	backtrack(neighbor, grid);
+	
+	return
 }
 
 class Maze {
@@ -55,6 +96,7 @@ class GridBox {
 	render() {
 		const canvas = document.querySelector('canvas');
 		const ctx = canvas.getContext('2d');
+		
 		if(this.visited) {
 			ctx.fillStyle = 'red';
 		} else {
@@ -82,5 +124,32 @@ class GridBox {
 
 	}
 
+	join(neighbor) {
+		console.log(`We're joining ${neighbor} with ${this}`);
+		console.log(`\t ${this.col}||${neighbor.col} ${this.row}||${neighbor.row}`);
+
+		if(this.col < neighbor.col) {
+			neighbor.l = false;
+			this.r = false;
+		} else if (neighbor.col < this.col) {
+			neighbor.r = false;
+			this.l = false;
+		} else if(this.row < neighbor.row) {
+			neighbor.t = false;
+			this.b = false;
+		} else if (neighbor.row < this.row) {
+			neighbor.b = false;
+			this.t = false;
+		} else {
+			console.error("Something is wrong with this relation");
+		}
+
+		this.render;
+		neighbor.render;
+	}
+
+	toString() {
+		return `[${this.col},${this.row}] ${this.visited ? 'visited' : 'unvisited'}`
+	}
 
 }
