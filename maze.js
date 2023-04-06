@@ -21,6 +21,7 @@ function showMaze(maze) {
 
 function showBox() {
 	var b = new GridBox(0,0,true, true, true, true);
+	new GridBox(1,1,true, true, true, true);
 }
 
 class Maze {
@@ -45,23 +46,23 @@ class GridBox {
 		
 		ctx.fillStyle = 'green';
 		// ctx.fillRect(g, g, w, h);
-		ctx.fillRect(g+(w+g)*row, g+(h+g)*col, w, h);
+		ctx.fillRect((w)*row, (h)*col, w, h);
 		ctx.fillStyle = 'black';
 
 		if(l) {
-			ctx.fillRect(g, g, g/2, h);
+			ctx.fillRect((w)*row, (h)*col, g/2, h);
 		}
 
 		if(t) {
-			ctx.fillRect(g, g, w, g/2);
+			ctx.fillRect((w)*row, (h)*col, w, g/2);
 		}
 
 		if(r) {
-			ctx.fillRect(g+w, g, g/2, h);
+			ctx.fillRect(w+(w)*row, (h)*col, g/2, h);
 		}
 
 		if(b) {
-			ctx.fillRect(g, g+h, w+g/2, g/2);
+			ctx.fillRect((w)*row, (h)*col+h, w+g/2, g/2);
 		}
 	}	
 
