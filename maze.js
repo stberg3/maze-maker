@@ -32,38 +32,46 @@ class Maze {
 }
 
 class GridBox {
+	w = 100
+	h = 100
+	g = 10
+
+
 	constructor(row,col,l,t,r,b) {
 		this.l = l;
 		this.t = t;
 		this.r = r;
 		this.b = b;
-
+		this.row = row;
+		this.col = row;
+		this.render();
+	}
+	
+	render() {
 		const canvas = document.querySelector('canvas');
 		const ctx = canvas.getContext('2d');
-		const w = 100
-		const h = 100
-		const g = 10
-		
 		ctx.fillStyle = 'green';
-		// ctx.fillRect(g, g, w, h);
-		ctx.fillRect((w)*row, (h)*col, w, h);
+		
+		ctx.fillRect((this.w)*this.row, (this.h)*this.col, this.w, this.h);
 		ctx.fillStyle = 'black';
 
-		if(l) {
-			ctx.fillRect((w)*row, (h)*col, g/2, h);
+		if(this.l) {
+			ctx.fillRect(this.w*this.row, this.h*this.col, this.g/2, this.h);
 		}
 
-		if(t) {
-			ctx.fillRect((w)*row, (h)*col, w, g/2);
+		if(this.t) {
+			ctx.fillRect(this.w*this.row, this.h*this.col, this.w, this.g/2);
 		}
 
-		if(r) {
-			ctx.fillRect(w+(w)*row, (h)*col, g/2, h);
+		if(this.r) {
+			ctx.fillRect(this.w*(this.row+1), this.h*this.col, this.g/2, this.h);
 		}
 
-		if(b) {
-			ctx.fillRect((w)*row, (h)*col+h, w+g/2, g/2);
+		if(this.b) {
+			ctx.fillRect(this.w*this.row, this.h*(this.col+1), this.w+this.g/2, this.g/2);
 		}
-	}	
+
+	}
+
 
 }
