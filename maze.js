@@ -1,23 +1,3 @@
-function maze() {
-	let maze = [[0,0],[0,1],[1,1],[1,0]];
-	return maze;
-}
-
-function showMaze(maze) {
-	const canvas = document.querySelector('canvas');
-	const ctx = canvas.getContext('2d');
-	ctx.fillStyle = 'green';
-	// const w = 100
-	// const h = 100
-	// const g = 10
-	// // maze.forEach(el => console.log(el))
-	// for(let i=0; i<10; i++) {
-	// 	for(let j=0; j<10; j++) {
-	// 		let r = ctx.fillRect(g+(w+g)*i, g+(h+g)*j, w, h);
-	// 		console.log("What's this?");
-	// 	}	
-	// }
-}
 
 function showBox() {
 	var grid = new Array(5)
@@ -33,28 +13,32 @@ function showBox() {
 	backtrack(grid[0][1], grid);
 }
 
-function backtrack(box,grid) {
-	let x = box.col;
-	let y = box.row;
-	console.log(`[${x},${y}]`)
 
-	grid[x][y].visited = true;
-	grid[x][y].render();
+function backtrack(box,grid) {	
+	console.log(`[${box.col},${box.row}]`)
+
+	grid[box.col][box.row].visited = true;
+	grid[box.col][box.row].render();
 
 	let offsets = [[0,1],[0,-1],[1,0],[-1,0]];
 	let neighbors = offsets
-		.map((offset) => [x+offset[0], y+offset[1]])
+		.map((offset) => [box.col+offset[0], box.row+offset[1]])
 		.filter((newCoord) => {
 			let okay = true;
-			let newX = newCoord[0];
-			let newY = newCoord[1];
+			let newCol = newCoord[1];
+			let newRow = newCoord[0];
 
-			okay &&= newX >= 0
-			okay &&= newY >= 0
-			okay &&= newX < grid.length
-			okay &&= newY < grid[0].length			
+			okay &&= newCol >= 0
+			okay &&= newRow >= 0
+			okay &&= newCol < grid.length
+			okay &&= newRow < grid[0].length			
 
-			return okay && !grid[newX,newY].visited;
+			return okay && !grid[newCol,newRow].visited;
+		})
+		.map((newCoord) => {
+			let newCol = newCoord[0];
+			let newRow = newCoord[1];
+			return grid[newCol,newRow];
 		});
 
 	console.log(`BOX ${box}: (${neighbors.length}) ` + neighbors.join(';'))
@@ -68,13 +52,6 @@ function backtrack(box,grid) {
 	backtrack(neighbor, grid);
 	
 	return
-}
-
-class Maze {
-	constructor(graph) {
-		width = graph.reduce((a,b) => Math.max(a[1], b[1]));
-		height = graph.reduce((a,b) => Math.max(a[0], b[0]));
-	}
 }
 
 class GridBox {
