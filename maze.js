@@ -20,8 +20,13 @@ function showMaze(maze) {
 }
 
 function showBox() {
-	var b = new GridBox(0,0,true, true, true, true);
-	new GridBox(1,1,true, true, true, true);
+	var grid = new Array(5)
+	for(i=0; i<5; i++) {
+		grid[i] = new Array(5)
+		for(j=0; j<5; j++) {
+			grid[i][j] = new GridBox(i,j,true, true, true, true);
+		}		
+	}
 }
 
 class Maze {
@@ -32,10 +37,10 @@ class Maze {
 }
 
 class GridBox {
-	w = 100
-	h = 100
-	g = 10
-
+	w = 100;
+	h = 100;
+	g = 10;
+	visited = false;
 
 	constructor(row,col,l,t,r,b) {
 		this.l = l;
@@ -43,16 +48,20 @@ class GridBox {
 		this.r = r;
 		this.b = b;
 		this.row = row;
-		this.col = row;
+		this.col = col;
 		this.render();
 	}
 	
 	render() {
 		const canvas = document.querySelector('canvas');
 		const ctx = canvas.getContext('2d');
-		ctx.fillStyle = 'green';
+		if(this.visited) {
+			ctx.fillStyle = 'red';
+		} else {
+			ctx.fillStyle = 'green';
+		}
 		
-		ctx.fillRect((this.w)*this.row, (this.h)*this.col, this.w, this.h);
+		ctx.fillRect(this.w*this.row, this.h*this.col, this.w, this.h);
 		ctx.fillStyle = 'black';
 
 		if(this.l) {
