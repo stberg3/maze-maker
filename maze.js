@@ -17,28 +17,26 @@ function showBox() {
 function backtrack(box,grid) {	
 	console.log(`[${box.col},${box.row}]`)
 
-	grid[box.col][box.row].visited = true;
-	grid[box.col][box.row].render();
+	grid[box.row][box.col].visited = true;
+	grid[box.row][box.col].render();
 
 	let offsets = [[0,1],[0,-1],[1,0],[-1,0]];
 	let neighbors = offsets
-		.map((offset) => [box.col+offset[0], box.row+offset[1]])
-		.filter((newCoord) => {
+		.map((offset) => [box.col+offset[0], box.row+offset[1]]);
+	neighbors = neighbors.filter((newCoord) => {
 			let okay = true;
 			let newCol = newCoord[1];
 			let newRow = newCoord[0];
 
-			okay &&= newCol >= 0
-			okay &&= newRow >= 0
-			okay &&= newCol < grid.length
-			okay &&= newRow < grid[0].length			
+			okay &&= newRow >= 0 && newRow < grid[0].length			
+			okay &&= newCol >= 0 && newCol < grid[1].length
 
 			return okay && !grid[newCol,newRow].visited;
-		})
-		.map((newCoord) => {
-			let newCol = newCoord[0];
-			let newRow = newCoord[1];
-			return grid[newCol,newRow];
+		});
+	neighbors = neighbors.map((newCoord) => {
+			let newRow = newCoord[0];
+			let newCol = newCoord[1];
+			return grid[newRow][newCol];
 		});
 
 	console.log(`BOX ${box}: (${neighbors.length}) ` + neighbors.join(';'))
