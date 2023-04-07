@@ -8,7 +8,7 @@ class Grid {
 
 	render() {	
 		for(let i=0; i<this.rows; i++) {
-			this.grid[i] = new Array(5)
+			this.grid[i] = new Array(this.cols)
 			
 			for(let j=0; j<this.cols; j++) {
 				this.grid[i][j] = new GridBox(i, j, this.grid);
@@ -16,8 +16,9 @@ class Grid {
 		}
 	}
 
-	makeMaze() {		
+	makeMaze() {
 		this.backtrack(this.grid[0][1]);
+		// this.grid[1][1].join(this.grid[1][0])
 	}
 
 
@@ -45,12 +46,12 @@ class GridBox {
 	h = 100;
 	g = 10;
 	visited = false;
+	westWall = true;
+	northWall = true;
+	eastWall = true;
+	southWall = true;
 
 	constructor(row,col,grid) {
-		this.l = true;
-		this.t = true;
-		this.r = true;
-		this.b = true;
 		this.row = row;
 		this.col = col;
 		this.grid = grid;
@@ -89,51 +90,67 @@ class GridBox {
 			ctx.fillStyle = 'green';
 		}
 		
-		ctx.fillRect(this.w*this.row, this.h*this.col, this.w, this.h);
+		ctx.fillRect(this.w*this.col, this.h*this.row, this.w, this.h);
 		ctx.fillStyle = 'black';
 
-		if(this.l) {
-			ctx.fillRect(this.w*this.row, this.h*this.col, this.g/2, this.h);
+		if(this.westWall) {
+			ctx.fillStyle = 'indianred';
+			ctx.fillRect(this.h*this.col, this.w*this.row, this.g/4, this.h);
 		}
 
-		if(this.t) {
-			ctx.fillRect(this.w*this.row, this.h*this.col, this.w, this.g/2);
+		if(this.northWall) {
+			ctx.fillStyle = 'blue';
+			ctx.fillRect(this.w*this.col, this.h*this.row, this.w, this.g/4);
 		}
 
-		if(this.r) {
-			ctx.fillRect(this.w*(this.row+1), this.h*this.col, this.g/2, this.h);
+		if(this.eastWall) {
+			ctx.fillStyle = 'yellow';
+			ctx.fillRect(this.w*(this.col+1), this.row*this.h, this.g/4, this.h);
 		}
 
-		if(this.b) {
-			ctx.fillRect(this.w*this.row, this.h*(this.col+1), this.w+this.g/2, this.g/2);
+		if(this.southWall) {
+			ctx.fillStyle = 'orange';
+			ctx.fillRect(this.w*this.col, this.h*(this.row+1), this.w, this.g/4);
 		}
 
 	}
 
 	join(neighbor) {
+		let manhattan = Math.abs(neighbor.col-this.col) + Math.abs(neighbor.row-this.row);
+		if(manhattan!= 1) {
+			console.error(`Cannot join ${this} with ${neighbor} (Manhattan distance is ${manhattan} but it must be 1)`);
+			return;
+		}
 
 		if(this.col < neighbor.col) {
-			neighbor.l = false;
-			this.r = false;
+			this.eastWall = false;
+			neighbor.westWall = false;
 		} else if (neighbor.col < this.col) {
-			neighbor.r = false;
-			this.l = false;
+			this.westWall = false;
+			neighbor.eastWall = false;
 		} else if(this.row < neighbor.row) {
-			neighbor.t = false;
-			this.b = false;
+			this.southWall = false;
+			neighbor.northWall = false;
 		} else if (neighbor.row < this.row) {
-			neighbor.b = false;
-			this.t = false;
+			this.northWall = false;
+			neighbor.southWall = false;
 		} else {
 			console.error("Something is wrong with this relation");
 		}
 
-		this.render;
-		neighbor.render;
+		this.render();
+		neighbor.render();
+		console.log(`Joined \n\t${this} with \n\t${neighbor}`)
+		return neighbor;
 	}
 
 	toString() {
-		return `[${this.col},${this.row}] ${this.visited ? 'visited' : 'unvisited'}`
+		return `[${this.row},${this.col}] ` + 
+				 // `${this.visited ? 'visited' : 'unvisited'} ` +
+				 `N: ${this.northWall ? 'X' : 'O'} ` + 
+				 `E: ${this.eastWall ? 'X' : 'O'} ` + 
+				 `S: ${this.southWall ? 'X' : 'O'} ` +
+				 `W: ${this.northWall ? 'X' : 'O'}`
 	}
 
 }
