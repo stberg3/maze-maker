@@ -29,13 +29,15 @@ class Grid {
 		box.visited = true;
 		box.render();
 
-		let neighbors = box.neighbors()
+		let neighbors = box.neighbors();
 
-		if(neighbors.length == 0) return;
+		while(neighbors.length > 0){
 
-		let neighbor = neighbors[Math.floor(Math.random(1)*neighbors.length)]
-		box.join(neighbor);
-		this.backtrack(neighbor);
+			let neighbor = neighbors[Math.floor(Math.random(1)*neighbors.length)]
+			box.join(neighbor);
+			this.backtrack(box.join(neighbor));
+			neighbors = box.neighbors();
+		}
 		
 		return;
 	}
@@ -90,27 +92,42 @@ class GridBox {
 			ctx.fillStyle = 'green';
 		}
 		
+
 		ctx.fillRect(this.w*this.col, this.h*this.row, this.w, this.h);
 		ctx.fillStyle = 'black';
+		ctx.lineWidth = 1;
 
 		if(this.westWall) {
-			ctx.fillStyle = 'indianred';
-			ctx.fillRect(this.h*this.col, this.w*this.row, this.g/4, this.h);
+			ctx.strokeStyle = 'black';
+			// ctx.fillRect(this.h*this.col, this.w*this.row, this.g/4, this.h);
+			ctx.beginPath();
+			ctx.moveTo(this.w*this.col, this.h*this.row);
+			ctx.lineTo(this.w*this.col, this.h*(this.row+1));
+			ctx.stroke(); 
 		}
 
 		if(this.northWall) {
-			ctx.fillStyle = 'blue';
-			ctx.fillRect(this.w*this.col, this.h*this.row, this.w, this.g/4);
+			ctx.strokeStyle = 'blue';
+			ctx.beginPath();
+			ctx.moveTo(this.w*this.col, this.h*this.row);
+			ctx.lineTo(this.w*(this.col+1), this.h*this.row);
+			ctx.stroke(); 
 		}
 
 		if(this.eastWall) {
-			ctx.fillStyle = 'yellow';
-			ctx.fillRect(this.w*(this.col+1), this.row*this.h, this.g/4, this.h);
+			ctx.strokeStyle = 'yellow';
+			ctx.beginPath();
+			ctx.moveTo(this.w*(this.col+1), this.h*this.row);
+			ctx.lineTo(this.w*(this.col+1), this.h*(this.row+1));
+			ctx.stroke(); 
 		}
 
 		if(this.southWall) {
-			ctx.fillStyle = 'orange';
-			ctx.fillRect(this.w*this.col, this.h*(this.row+1), this.w, this.g/4);
+			ctx.strokeStyle = 'orange';
+			ctx.beginPath();
+			ctx.moveTo(this.w*this.col, this.h*(this.row+1));
+			ctx.lineTo(this.w*(this.col+1), this.h*(this.row+1));
+			ctx.stroke(); 
 		}
 
 	}
@@ -119,7 +136,7 @@ class GridBox {
 		let manhattan = Math.abs(neighbor.col-this.col) + Math.abs(neighbor.row-this.row);
 		if(manhattan!= 1) {
 			console.error(`Cannot join ${this} with ${neighbor} (Manhattan distance is ${manhattan} but it must be 1)`);
-			return;
+			return this;
 		}
 
 		if(this.col < neighbor.col) {
