@@ -17,24 +17,24 @@ class Grid {
 	}
 
 	makeMaze() {		
-		backtrack(grid[0][1], grid);
+		this.backtrack(this.grid[0][1]);
 	}
 
 
-	backtrack(box, grid) {	
+	backtrack(box) {
+		if(box.visited) return;
 		console.log(`[${box.col},${box.row}]`)
 
-		grid[box.row][box.col].visited = true;
-		grid[box.row][box.col].render();
+		box.visited = true;
+		box.render();
 
-		let offsets = [[0,1],[0,-1],[1,0],[-1,0]];
-		let neighbors = grid[box.row][box.col].neighbors()
+		let neighbors = box.neighbors()
 
 		if(neighbors.length == 0) return;
 
 		let neighbor = neighbors[Math.floor(Math.random(1)*neighbors.length)]
 		box.join(neighbor);
-		backtrack(neighbor, grid);
+		this.backtrack(neighbor);
 		
 		return;
 	}
