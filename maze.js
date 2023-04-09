@@ -41,6 +41,22 @@ class Grid {
 				searched[i][j] = false;
 			}
 		}
+
+		let q = [this.grid[0][0]];
+		while(q.length > 0) {
+			let probe = q.shift();
+			probe.status = SEARCHED;
+			searched[q.row][q.col] = true;
+			
+			if(probe.row == grid.length - 1 && probe.col == grid[0].length - 1) {
+				console.log("We found the end!");
+				return;
+			}
+
+
+		}
+
+		console.error("I couldn't find the end D-:")
 	}
 
 	iterativeDfs() {
@@ -52,7 +68,7 @@ class Grid {
 
 		while(stack.length > 0) {
 			let curr = stack.pop();
-			let neighbors = curr.neighbors()
+			let neighbors = curr.neighbors(VISITED)
 				.filter((n) => !this.visited[n.row][n.col]);
 
 			if(neighbors.length > 0){
@@ -74,7 +90,7 @@ class Grid {
 		box.status = true
 		box.render();
 
-		let neighbors = box.neighbors().filter((n) => !this.visited[n.row][n.col]);
+		let neighbors = box.neighbors(VISITED)
 
 		while(neighbors.length > 0){
 
@@ -110,7 +126,7 @@ class GridBox {
 		this.render();
 	}
 	
-	neighbors() {
+	neighbors(badStatus) {
 		let offsets = [[0,1],[0,-1],[1,0],[-1,0]];
 		let neighbors = offsets
 			.map((offset) => [this.row+offset[0], this.col+offset[1]])
@@ -122,7 +138,7 @@ class GridBox {
 				isValid &&= 0 <= newRow && newRow < this.grid[0].length;		
 				isValid &&= 0 <= newCol && newCol < this.grid[1].length;
 
-				return isValid && (this.grid[newCol,newRow].status != 1);
+				return isValid && (this.grid[newCol,newRow].status != badStatus);
 			}).map((newCoord) => {
 				let newRow = newCoord[0];
 				let newCol = newCoord[1];
@@ -140,6 +156,9 @@ class GridBox {
 		switch(this.status) {
 			case(VISITED):
 				ctx.fillStyle = "#55FF55";
+				break;
+			case(SEARCHED):
+				ctx.fillStyle = "#5555FF";
 				break;
 			default:
 				ctx.fillStyle = "#FF3333";
