@@ -24,11 +24,9 @@ class Grid {
 	}
 
 	makeMaze() {
-		this.backtrack(this.grid[0][1]);
+		this.backtrack(this.grid[0][0]);
 		// this.grid[1][1].join(this.grid[1][0])
 	}
-
-
 
 	backtrack(box) {
 		console.log(`backtrack(${box})`);
@@ -93,13 +91,14 @@ class GridBox {
 	}
 
 	render() {
+
 		const canvas = document.querySelector('canvas');
 		const ctx = canvas.getContext('2d');
 		
 		if(this.visited) {
-			ctx.fillStyle = 'red';
+			ctx.fillStyle = "#FF3333";
 		} else {
-			ctx.fillStyle = 'green';
+			ctx.fillStyle = "#55FF55";
 		}
 		
 
@@ -117,7 +116,7 @@ class GridBox {
 		}
 
 		if(this.northWall) {
-			ctx.strokeStyle = 'blue';
+			ctx.strokeStyle = 'black';
 			ctx.beginPath();
 			ctx.moveTo(this.w*this.col, this.h*this.row);
 			ctx.lineTo(this.w*(this.col+1), this.h*this.row);
@@ -125,7 +124,7 @@ class GridBox {
 		}
 
 		if(this.eastWall) {
-			ctx.strokeStyle = 'yellow';
+			ctx.strokeStyle = 'black';
 			ctx.beginPath();
 			ctx.moveTo(this.w*(this.col+1), this.h*this.row);
 			ctx.lineTo(this.w*(this.col+1), this.h*(this.row+1));
@@ -133,7 +132,7 @@ class GridBox {
 		}
 
 		if(this.southWall) {
-			ctx.strokeStyle = 'orange';
+			ctx.strokeStyle = 'black';
 			ctx.beginPath();
 			ctx.moveTo(this.w*this.col, this.h*(this.row+1));
 			ctx.lineTo(this.w*(this.col+1), this.h*(this.row+1));
