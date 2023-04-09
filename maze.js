@@ -24,14 +24,34 @@ class Grid {
 	}
 
 	makeMaze() {
-		this.backtrack(this.grid[0][0]);
-		// this.grid[1][1].join(this.grid[1][0])
+		// this.backtrack(this.grid[0][0]);
+		this.iterative_dfs();
+	}
+
+	iterative_dfs() {
+		let box = this.grid[0][0];
+		let stack = new Array();
+		box.visited = true;
+		this.visited[0][0] = true;
+		stack.push(box);
+
+		while(stack.length > 0) {
+			let curr = stack.pop();
+			let neighbors = curr.neighbors()
+				.filter((n) => !this.visited[n.row][n.col]);
+
+			if(neighbors.length > 0){
+				let neighbor = neighbors[Math.floor(Math.random(1)*neighbors.length)]
+				neighbor.visited = true;
+				this.visited[neighbor.row][neighbor.col] = true;
+				stack.push(curr);
+				stack.push(neighbor);
+				curr.join(neighbor)
+			}
+		}
 	}
 
 	backtrack(box) {
-		console.log(`backtrack(${box})`);
-		console.log(`[${box.col},${box.row}]`)
-
 		this.visited[box.row][box.col] = true;
 		box.visited = true
 		box.render();
@@ -42,7 +62,6 @@ class Grid {
 
 			let neighbor = neighbors[Math.floor(Math.random(1)*neighbors.length)]
 			box.join(neighbor);
-			console.log(`Going to ${neighbor}`);
 			this.backtrack(box.join(neighbor));
 			neighbors = box.neighbors().filter((n) => !this.visited[n.row][n.col]);
 		}
@@ -52,8 +71,8 @@ class Grid {
 }
 
 class GridBox {
-	w = 100;
-	h = 100;
+	w = 10;
+	h = 10;
 	g = 10;
 	visited = false;
 	westWall = true;
