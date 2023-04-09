@@ -1,13 +1,18 @@
+const VISITED = 0;
+const SEARCHED = 1;
+
 class Grid {
 	constructor(rows, cols) {
 		this.grid = new Array(rows);
 		this.rows = rows;
 		this.cols = cols;
+		this.graph = new Map();		
 		this.visited = new Array(rows)
 		for(let i =0; i < rows; i++) {
 			this.visited[i] = new Array(cols);
 			for(let j = 0; j < rows; j++) {
 				this.visited[i][j] = false;
+				this.graph.set(`${i},${j}`, new Array());
 			}	
 		}
 		this.render();
@@ -25,13 +30,23 @@ class Grid {
 
 	makeMaze() {
 		// this.backtrack(this.grid[0][0]);
-		this.iterative_dfs();
+		this.iterativeDfs();
 	}
 
-	iterative_dfs() {
+	solveMaze() {
+		let searched = new Array(this.rows)
+		for(let i =0; i < this.rows; i++) {
+			searched[i] = new Array(this.cols);
+			for(let j = 0; j < this.rows; j++) {
+				searched[i][j] = false;
+			}
+		}
+	}
+
+	iterativeDfs() {
 		let box = this.grid[0][0];
 		let stack = new Array();
-		box.visited = true;
+		box.status = true;
 		this.visited[0][0] = true;
 		stack.push(box);
 
@@ -42,18 +57,21 @@ class Grid {
 
 			if(neighbors.length > 0){
 				let neighbor = neighbors[Math.floor(Math.random(1)*neighbors.length)]
-				neighbor.visited = true;
+				neighbor.status = true;
 				this.visited[neighbor.row][neighbor.col] = true;
 				stack.push(curr);
-				stack.push(neighbor);
+				stack.push(neighbor);			
 				curr.join(neighbor)
+				curr.join(neighbor);
+				this.graph.get(curr.getKey()).push(neighbor);
+				this.graph.get(neighbor.getKey()).push(curr);
 			}
 		}
 	}
 
 	backtrack(box) {
 		this.visited[box.row][box.col] = true;
-		box.visited = true
+		box.status = true
 		box.render();
 
 		let neighbors = box.neighbors().filter((n) => !this.visited[n.row][n.col]);
@@ -61,8 +79,13 @@ class Grid {
 		while(neighbors.length > 0){
 
 			let neighbor = neighbors[Math.floor(Math.random(1)*neighbors.length)]
+			
 			box.join(neighbor);
-			this.backtrack(box.join(neighbor));
+			this.graph.get(box.key()).push(neighbor);
+			this.graph.get(neighbor.key()).push(box);
+			
+			this.backtrack(neighbor);
+			
 			neighbors = box.neighbors().filter((n) => !this.visited[n.row][n.col]);
 		}
 		
@@ -71,10 +94,10 @@ class Grid {
 }
 
 class GridBox {
-	w = 10;
-	h = 10;
+	w = 50;
+	h = 50;
 	g = 10;
-	visited = false;
+	status = false;
 	westWall = true;
 	northWall = true;
 	eastWall = true;
@@ -83,7 +106,7 @@ class GridBox {
 	constructor(row,col,grid) {
 		this.row = row;
 		this.col = col;
-		this.grid = grid;		
+		this.grid = grid;
 		this.render();
 	}
 	
@@ -99,7 +122,7 @@ class GridBox {
 				isValid &&= 0 <= newRow && newRow < this.grid[0].length;		
 				isValid &&= 0 <= newCol && newCol < this.grid[1].length;
 
-				return isValid && !this.grid[newCol,newRow].visited;
+				return isValid && (this.grid[newCol,newRow].status != 1);
 			}).map((newCoord) => {
 				let newRow = newCoord[0];
 				let newCol = newCoord[1];
@@ -114,12 +137,13 @@ class GridBox {
 		const canvas = document.querySelector('canvas');
 		const ctx = canvas.getContext('2d');
 		
-		if(this.visited) {
-			ctx.fillStyle = "#FF3333";
-		} else {
-			ctx.fillStyle = "#55FF55";
-		}
-		
+		switch(this.status) {
+			case(VISITED):
+				ctx.fillStyle = "#55FF55";
+				break;
+			default:
+				ctx.fillStyle = "#FF3333";
+		}		
 
 		ctx.fillRect(this.w*this.col, this.h*this.row, this.w, this.h);
 		ctx.fillStyle = 'black';
@@ -185,8 +209,11 @@ class GridBox {
 
 		this.render();
 		neighbor.render();
-		console.log(`Joined \n\t${this} with \n\t${neighbor}`)
 		return neighbor;
+	}	
+
+	getKey() {
+		return `${this.row},${this.col}`
 	}
 
 	toString() {
