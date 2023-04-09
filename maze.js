@@ -22,7 +22,10 @@ class Grid {
 	}
 
 
+
 	backtrack(box) {
+		console.log(`backtrack(${box})`);
+
 		if(box.visited) return;
 		console.log(`[${box.col},${box.row}]`)
 
@@ -35,6 +38,7 @@ class Grid {
 
 			let neighbor = neighbors[Math.floor(Math.random(1)*neighbors.length)]
 			box.join(neighbor);
+			console.log(`Going to ${neighbor}`);
 			this.backtrack(box.join(neighbor));
 			neighbors = box.neighbors();
 		}
@@ -63,7 +67,7 @@ class GridBox {
 	neighbors() {
 		let offsets = [[0,1],[0,-1],[1,0],[-1,0]];
 		let neighbors = offsets
-			.map((offset) => [this.col+offset[0], this.row+offset[1]])
+			.map((offset) => [this.row+offset[0], this.col+offset[1]])
 			.filter((newCoord) => {
 				let isValid = true;
 				let newCol = newCoord[1];
