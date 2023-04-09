@@ -3,6 +3,13 @@ class Grid {
 		this.grid = new Array(rows);
 		this.rows = rows;
 		this.cols = cols;
+		this.visited = new Array(rows)
+		for(let i =0; i < rows; i++) {
+			this.visited[i] = new Array(cols);
+			for(let j = 0; j < rows; j++) {
+				this.visited[i][j] = false;
+			}	
+		}
 		this.render();
 	}
 
@@ -25,14 +32,13 @@ class Grid {
 
 	backtrack(box) {
 		console.log(`backtrack(${box})`);
-
-		if(box.visited) return;
 		console.log(`[${box.col},${box.row}]`)
 
-		box.visited = true;
+		this.visited[box.row][box.col] = true;
+		box.visited = true
 		box.render();
 
-		let neighbors = box.neighbors();
+		let neighbors = box.neighbors().filter((n) => !this.visited[n.row][n.col]);
 
 		while(neighbors.length > 0){
 
@@ -40,7 +46,7 @@ class Grid {
 			box.join(neighbor);
 			console.log(`Going to ${neighbor}`);
 			this.backtrack(box.join(neighbor));
-			neighbors = box.neighbors();
+			neighbors = box.neighbors().filter((n) => !this.visited[n.row][n.col]);
 		}
 		
 		return;
@@ -60,7 +66,7 @@ class GridBox {
 	constructor(row,col,grid) {
 		this.row = row;
 		this.col = col;
-		this.grid = grid;
+		this.grid = grid;		
 		this.render();
 	}
 	
