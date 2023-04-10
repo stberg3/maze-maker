@@ -10,9 +10,9 @@ class Grid {
 		this.visited = new Array(rows)
 		for(let i =0; i < rows; i++) {
 			this.visited[i] = new Array(cols);
+			this.visited[i].fill(false)
 			for(let j = 0; j < rows; j++) {
-				this.visited[i][j] = false;
-				this.graph.set(`${i},${j}`, new Array());
+				this.graph.set(`${i},${j}`, []);
 			}	
 		}
 		this.render();
@@ -31,32 +31,30 @@ class Grid {
 	makeMaze() {
 		// this.backtrack(this.grid[0][0]);
 		this.iterativeDfs();
+		this.solveMaze();
 	}
 
 	solveMaze() {
-		let searched = new Array(this.rows)
-		for(let i =0; i < this.rows; i++) {
-			searched[i] = new Array(this.cols);
-			for(let j = 0; j < this.rows; j++) {
-				searched[i][j] = false;
-			}
-		}
-
+		let searched = new Set()
 		let q = [this.grid[0][0]];
+
 		while(q.length > 0) {
 			let probe = q.shift();
 			probe.status = SEARCHED;
-			searched[q.row][q.col] = true;
+			probe.render();
+			searched.add(probe.getKey(), true);
 			
-			if(probe.row == grid.length - 1 && probe.col == grid[0].length - 1) {
+			if(probe.row == this.grid.length - 1 && probe.col == this.grid[0].length - 1) {
 				console.log("We found the end!");
 				return;
 			}
 
-
+			let neighbors = this.graph.get(probe.getKey())
+				.filter((box) => !searched.has(box.getKey()));
+			neighbors.forEach((n) => q.push(n));
 		}
 
-		console.error("I couldn't find the end D-:")
+		console.error("I couldn't find the end 😖")
 	}
 
 	iterativeDfs() {
@@ -236,12 +234,12 @@ class GridBox {
 	}
 
 	toString() {
-		return `[${this.row},${this.col}] ` + 
+		return `[${this.row},${this.col}] `  
 				 // `${this.visited ? 'visited' : 'unvisited'} ` +
-				 `N: ${this.northWall ? 'X' : 'O'} ` + 
-				 `E: ${this.eastWall ? 'X' : 'O'} ` + 
-				 `S: ${this.southWall ? 'X' : 'O'} ` +
-				 `W: ${this.northWall ? 'X' : 'O'}`
+				 // `N: ${this.northWall ? 'X' : 'O'} ` + 
+				 // `E: ${this.eastWall ? 'X' : 'O'} ` + 
+				 // `S: ${this.southWall ? 'X' : 'O'} ` +
+				 // `W: ${this.northWall ? 'X' : 'O'}`
 	}
 
 }
