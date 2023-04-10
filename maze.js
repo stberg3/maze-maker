@@ -2,6 +2,7 @@ const VISITED = 0;
 const SEARCHED = 1;
 const START = 2;
 const END = 3;
+const PATH = 4;
 
 class Grid {
 	constructor(rows, cols) {
@@ -36,6 +37,14 @@ class Grid {
 		this.solveMaze();
 	}
 
+	renderPath(end) {
+		while(end != null) {
+			end.status = PATH;
+			end.render();
+			end = end.pred;
+		}
+	}
+
 	solveMaze() {
 		let searched = new Set()
 		let q = [this.grid[0][0]];
@@ -52,12 +61,15 @@ class Grid {
 				probe.status = END;
 				probe.render();
 				console.log("We found the end!");
-				return;
+				return probe;
 			}
 
 			let neighbors = this.graph.get(probe.getKey())
 				.filter((box) => !searched.has(box.getKey()));
-			neighbors.forEach((n) => q.push(n));
+			neighbors.forEach((n) => {
+				n.pred = probe;
+				q.push(n);
+			});
 		}
 
 		console.error("I couldn't find the end 😖")
@@ -114,14 +126,15 @@ class Grid {
 }
 
 class GridBox {
-	w = 50;
-	h = 50;
+	w = 20;
+	h = 20;
 	g = 10;
 	status = false;
 	westWall = true;
 	northWall = true;
 	eastWall = true;
 	southWall = true;
+	pred = null;
 
 	constructor(row,col,grid) {
 		this.row = row;
@@ -169,6 +182,9 @@ class GridBox {
 				break;
 			case(END):
 				ctx.fillStyle = "#55FFFF";
+				break;
+			case(PATH):
+				ctx.fillStyle = "#FFFF55";
 				break;
 			default:
 				ctx.fillStyle = "#FF3333";
