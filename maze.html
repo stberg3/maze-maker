@@ -8,11 +8,14 @@
 	<canvas width="1500" height="1500">
 </canvas>
 <script type="text/javascript">
-	let g = new Grid(50,50);
+	let g = new Grid(25,25);
 	g.render();
-	g.iterativeDfs();
-	let end = g.solveMaze();
-	g.renderPath(end);
+	g.iterativeDfs().then(() => {
+		let p = g.solveMaze();
+		p.then((end) => {
+			g.renderPath(end);
+		});		
+	});
 </script>
 </body>
 </html>
