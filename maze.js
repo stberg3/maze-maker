@@ -1,5 +1,7 @@
 const VISITED = 0;
 const SEARCHED = 1;
+const START = 2;
+const END = 3;
 
 class Grid {
 	constructor(rows, cols) {
@@ -45,6 +47,10 @@ class Grid {
 			searched.add(probe.getKey(), true);
 			
 			if(probe.row == this.grid.length - 1 && probe.col == this.grid[0].length - 1) {
+				this.grid[0][0].status = START;
+				this.grid[0][0].render();
+				probe.status = END;
+				probe.render();
 				console.log("We found the end!");
 				return;
 			}
@@ -157,6 +163,12 @@ class GridBox {
 				break;
 			case(SEARCHED):
 				ctx.fillStyle = "#5555FF";
+				break;
+			case(START):
+				ctx.fillStyle = "#FFFF55";
+				break;
+			case(END):
+				ctx.fillStyle = "#55FFFF";
 				break;
 			default:
 				ctx.fillStyle = "#FF3333";
